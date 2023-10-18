@@ -4,9 +4,9 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "node src/server.js",
-    "start-prod": "NODE_ENV=production node ./src/server.js",
-    "dev": "nodemon src/server.js",
+    "start": "node src/server.ts",
+    "start-prod": "NODE_ENV=production node src/server.ts",
+    "dev": "nodemon src/server.ts",
     "lint": "eslint \"**/*.js\"",
     "migrate": "node-pg-migrate"
   },
@@ -14,16 +14,23 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/node": "^20.8.6",
+    "@typescript-eslint/eslint-plugin": "^6.8.0",
+    "@typescript-eslint/parser": "^6.8.0",
     "eslint": "^8.0.1",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.25.2",
     "eslint-plugin-n": "^15.0.0 || ^16.0.0 ",
     "eslint-plugin-promise": "^6.0.0",
-    "nodemon": "^2.0.22"
+    "nodemon": "^2.0.22",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
   },
   "dependencies": {
     "@hapi/hapi": "^21.3.2",
     "@hapi/jwt": "^3.2.0",
+    "@types/bcrypt": "^5.0.1",
+    "auto-bind": "4",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.3.1",
     "joi": "^17.11.0",
