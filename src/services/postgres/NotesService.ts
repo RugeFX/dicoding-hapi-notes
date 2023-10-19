@@ -4,13 +4,32 @@ import {mapDBToModel} from "../../utils";
 import InvariantError from "../../exceptions/InvariantError";
 import NotFoundError from "../../exceptions/NotFoundError";
 import AuthorizationError from "../../exceptions/AuthorizationError";
-import type {NotePayload, Note} from "../../types/note";
+import type {NotePayload, Note, MappedNote} from "../../types/note";
+import type CollaborationsService from "./CollaborationsService";
 
-class NotesService {
+interface INotesService {
+    addNote(noteData: NotePayload): Promise<string>;
+
+    getNotes(owner: string): Promise<MappedNote[]>;
+
+    getNoteById(id: string): Promise<MappedNote>;
+
+    editNoteById(id: string, noteData: Omit<NotePayload, 'owner'>): Promise<void>;
+
+    deleteNoteById(id: string): Promise<void>;
+
+    verifyNoteOwner(id: string, owner: string): Promise<void>;
+
+    verifyNoteAccess(noteId: string, userId: string): Promise<void>;
+}
+
+class NotesService implements INotesService {
     private _pool: Pool
+    private _collaborationService: CollaborationsService
 
-    constructor() {
+    constructor(collaborationService: CollaborationsService) {
         this._pool = new Pool()
+        this._collaborationService = collaborationService;
     }
 
     async addNote({title, body, tags, owner}: NotePayload) {
@@ -34,11 +53,14 @@ class NotesService {
 
     async getNotes(owner: string) {
         const query = {
-            text: 'SELECT * FROM notes WHERE owner = $1',
-            values: [owner]
-        }
-        const result = await this._pool.query<Note>(query)
-        return result.rows.map(mapDBToModel)
+            text: `SELECT notes.* FROM notes
+                    LEFT JOIN collaborations ON collaborations.note_id = notes.id
+                    WHERE notes.owner = $1 OR collaborations.user_id = $1
+                    GROUP BY notes.id`,
+            values: [owner],
+        };
+        const result = await this._pool.query(query);
+        return result.rows.map(mapDBToModel);
     }
 
     async getNoteById(id: string) {
@@ -98,6 +120,21 @@ class NotesService {
 
         if (note.owner !== owner) {
             throw new AuthorizationError('Anda tidak berhak mengakses resource ini')
+        }
+    }
+
+    async verifyNoteAccess(noteId: string, userId: string) {
+        try {
+            await this.verifyNoteOwner(noteId, userId);
+        } catch (error) {
+            if (error instanceof NotFoundError) {
+                throw error;
+            }
+            try {
+                await this._collaborationService.verifyCollaborator(noteId, userId);
+            } catch {
+                throw error;
+            }
         }
     }
 }

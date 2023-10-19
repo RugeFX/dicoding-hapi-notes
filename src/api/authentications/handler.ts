@@ -5,6 +5,7 @@ import UsersService from "../../services/postgres/UsersService";
 import type TokenManager from "../../tokenize/TokenManager";
 import type AuthenticationsValidator from '../../validator/authentications';
 import type {UserPayload} from "../../types/user";
+import autoBind from "auto-bind";
 
 class AuthenticationsHandler {
     private _authenticationsService: AuthenticationsService;
@@ -23,10 +24,7 @@ class AuthenticationsHandler {
         this._tokenManager = tokenManager;
         this._validator = validator;
 
-        // Bind methods to the class instance
-        this.postAuthenticationHandler = this.postAuthenticationHandler.bind(this);
-        this.putAuthenticationHandler = this.putAuthenticationHandler.bind(this);
-        this.deleteAuthenticationHandler = this.deleteAuthenticationHandler.bind(this);
+        autoBind(this)
     }
 
     async postAuthenticationHandler(request: Request, h: ResponseToolkit) {

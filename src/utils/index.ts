@@ -1,4 +1,4 @@
-import {Note} from "../types/note";
+import {MappedNote, Note} from "../types/note";
 
 export const mapDBToModel =
     ({
@@ -8,7 +8,7 @@ export const mapDBToModel =
          tags,
          created_at,
          updated_at
-     }: Note & { created_at: string; updated_at: string }) => ({
+     }: Note & { created_at: string; updated_at: string }): MappedNote => ({
         id,
         title,
         body,

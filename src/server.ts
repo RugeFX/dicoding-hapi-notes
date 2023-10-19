@@ -15,11 +15,16 @@ import authentications from './api/authentications';
 import AuthenticationsService from "./services/postgres/AuthenticationsService";
 import TokenManager from "./tokenize/TokenManager";
 import AuthenticationsValidator from "./validator/authentications";
+// Collaborations
+import collaborations from './api/collaborations';
+import CollaborationsService from './services/postgres/CollaborationsService';
+import CollaborationsValidator from './validator/collaborations';
 
 const init = async () => {
-    const notesService = new NotesService()
     const usersService = new UsersService()
     const authenticationsService = new AuthenticationsService()
+    const collaborationsService = new CollaborationsService();
+    const notesService = new NotesService(collaborationsService)
 
     const server = Hapi.server({
         port: process.env.PORT!,
@@ -76,7 +81,15 @@ const init = async () => {
                 tokenManager: TokenManager,
                 validator: AuthenticationsValidator
             }
-        }
+        },
+        {
+            plugin: collaborations,
+            options: {
+                collaborationsService,
+                notesService,
+                validator: CollaborationsValidator,
+            },
+        },
     ])
 
     await server.start()

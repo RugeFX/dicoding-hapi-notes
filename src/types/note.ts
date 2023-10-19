@@ -7,3 +7,12 @@ export type Note = {
 }
 
 export type NotePayload = Omit<Note, "id">
+
+export type MappedNote = {
+    id: string
+    title: string
+    body: string
+    tags: string[]
+    createdAt: string
+    updatedAt: string
+}
