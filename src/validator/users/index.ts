@@ -1,15 +1,14 @@
-import InvariantError from "../../exceptions/InvariantError";
-import {UserPayloadSchema} from "./schema";
-
+import InvariantError from '../../exceptions/InvariantError'
+import { UserPayloadSchema } from './schema'
 
 const UsersValidator = {
-    validateUserPayload: (payload) => {
-        const validationResult = UserPayloadSchema.validate(payload)
+  validateUserPayload: (payload: unknown) => {
+    const validationResult = UserPayloadSchema.validate(payload)
 
-        if (validationResult.error) {
-            throw new InvariantError(validationResult.error.message)
-        }
+    if (validationResult.error !== undefined) {
+      throw new InvariantError(validationResult.error.message)
     }
+  }
 }
 
 export default UsersValidator

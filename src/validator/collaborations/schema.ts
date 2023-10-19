@@ -1,8 +1,8 @@
-import * as Joi from "joi";
+import * as Joi from 'joi'
 
 const CollaborationPayloadSchema = Joi.object({
-    noteId: Joi.string().required(),
-    userId: Joi.string().required(),
-});
+  noteId: Joi.string().required(),
+  userId: Joi.string().required()
+})
 
-export {CollaborationPayloadSchema}
+export { CollaborationPayloadSchema }
