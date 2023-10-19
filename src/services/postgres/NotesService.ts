@@ -59,7 +59,7 @@ class NotesService implements INotesService {
                     GROUP BY notes.id`,
             values: [owner],
         };
-        const result = await this._pool.query(query);
+        const result = await this._pool.query<Note>(query);
         return result.rows.map(mapDBToModel);
     }
 
