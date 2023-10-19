@@ -65,16 +65,19 @@ class NotesService implements INotesService {
 
     async getNoteById(id: string) {
         const query = {
-            text: 'SELECT * FROM notes WHERE id = $1',
-            values: [id]
-        }
-        const result = await this._pool.query<Note>(query)
+            text: `SELECT notes.*, users.username
+                    FROM notes
+                    LEFT JOIN users ON users.id = notes.owner
+                    WHERE notes.id = $1`,
+            values: [id],
+        };
+        const result = await this._pool.query<Note>(query);
 
-        if (!result.rowCount) {
-            throw new NotFoundError('Catatan tidak ditemukan')
+        if (!result.rows.length) {
+            throw new NotFoundError('Catatan tidak ditemukan');
         }
 
-        return result.rows.map(mapDBToModel)[0]
+        return result.rows.map(mapDBToModel)[0];
     }
 
     async editNoteById(id: string, {title, body, tags}: Omit<NotePayload, "owner">) {

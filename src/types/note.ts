@@ -15,4 +15,5 @@ export type MappedNote = {
     tags: string[]
     createdAt: string
     updatedAt: string
+    username: string
 }

@@ -15,6 +15,8 @@ interface UserServiceInterface {
     verifyNewUsername(username: string): Promise<void>
 
     verifyUserCredential(username: string, password: string): Promise<string>
+
+    getUsersByUsername(username: string): Promise<User[]>
 }
 
 class UsersService implements UserServiceInterface {
@@ -90,6 +92,15 @@ class UsersService implements UserServiceInterface {
             throw new AuthenticationError('Kredensial yang Anda berikan salah');
         }
         return id;
+    }
+
+    async getUsersByUsername(username: string) {
+        const query = {
+            text: 'SELECT id, username, fullname FROM users WHERE username LIKE $1',
+            values: [`%${username}%`],
+        };
+        const result = await this._pool.query<User>(query);
+        return result.rows;
     }
 }
 
